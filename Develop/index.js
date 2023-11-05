@@ -2,10 +2,15 @@
 const fs = require('fs');
 const inquirer = require('inquirer');
 const path = require('path');
-const generateMarkdown = ('./utils/generateMarkdown.js');
+const generateMarkdown = require('./utils/generateMarkdown.js');    
 
 // TODO: Create an array of questions for user input
 const questions = [
+    {
+        input: "input",
+        name: "name",
+        message: "What is your full name?",
+    },
     {
         type: "input",
         name: "title",
@@ -35,18 +40,23 @@ const questions = [
     {
         type: "input",
         name: "contribution",
-        input: "List any (GitHub) contributors that helped with the project.",
+        message: "List any (GitHub) contributors that helped with the project.",
         default: '',
     },
     {
         type: "input",
         name: "test",
-        input: "Provide required tests if applicable.",
+        message: "Provide required tests if applicable.",
+    },
+    {
+        type: "input",
+        name: "creator",
+        message: "What is your GitHub username?",
     },
     {
         type: "input",
         name: "question",
-        input: "What is your email for questions about your project?",
+        message: "What is your email for questions about your project?",
 
     },
 
@@ -58,12 +68,17 @@ function writeToFile(fileName, data) {
 }
 
 // Initializes app
-function init() {
-    inquirer.prompt(questions).then((responses) => {
+async function init() {
+    try {
+        const responses = await inquirer.prompt(questions);
         console.log("Creating Professional README.md file . . .");
-        writeToFile("./dist/README.md", generateMarkdown({ ...responses }));
-    });
+        await writeToFile("./dist/README.md", generateMarkdown({ ...responses }));
+        console.log("README.md successfully generated!");
+    } catch (error) {
+        console.error("An error occurred:", error);
+    }
 }
+
 
 // Function call to initialize app
 init();
